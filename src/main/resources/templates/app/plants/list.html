@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Мои растения', '', ~{::main})}">
+
+<main class="container">
+    <h1 style="margin-top:0;">Мои растения</h1>
+    <div class="muted">Оранжерея пользователя (UserPlant).</div>
+
+    <div class="alert ok" th:if="${msg != null}" th:text="${msg}">ok</div>
+
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn btn-primary" th:href="@{/app/plants/new}">Добавить растение</a>
+        <a class="btn btn-ghost" th:href="@{/app}">Назад</a>
+    </div>
+
+    <div class="card" th:if="${plants == null || #lists.isEmpty(plants)}">
+        Пока нет растений. Можно добавить первое.
+    </div>
+
+    <div th:if="${plants != null && !#lists.isEmpty(plants)}">
+        <div th:each="p : ${plants}">
+            <div th:replace="~{fragments/components :: userPlantCard(${p})}"></div>
+        </div>
+    </div>
+
+</main>
+</html>

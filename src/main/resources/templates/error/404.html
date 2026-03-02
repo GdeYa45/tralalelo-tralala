@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('404 — Страница не найдена', '', ~{::main})}">
+
+<main class="container">
+    <h1>404 — Страница не найдена</h1>
+    <p class="muted">
+        Адрес не найден:
+        <span th:text="${path}">/</span>
+    </p>
+
+    <div class="card" style="max-width:720px;">
+        <p class="muted" style="margin-top:0;">
+            Возможно, ссылка устарела или в адресе есть опечатка.
+        </p>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <a class="btn btn-primary" th:href="@{/}">На главную</a>
+            <a class="btn" th:href="${backUrl}">Назад</a>
+        </div>
+    </div>
+</main>
+
+</html>

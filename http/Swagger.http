@@ -1,0 +1,8 @@
+@baseUrl = http://localhost:8090
+
+### Swagger UI (HTML)
+GET {{baseUrl}}/swagger-ui/index.html
+
+### OpenAPI JSON
+GET {{baseUrl}}/v3/api-docs
+Accept: application/json

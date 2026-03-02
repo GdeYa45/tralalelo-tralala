@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layouts/base :: layout('Каталог видов', '', ~{::main})}">
+
+<main class="container">
+    <h1 style="margin-top:0;">Каталог видов</h1>
+    <div class="alert ok" th:if="${msg != null}" th:text="${msg}">ok</div>
+
+    <div class="card" sec:authorize="hasRole('ADMIN')" style="margin-top:14px;">
+        <h2 style="margin:0 0 10px 0; font-size:18px;">Импорт вида из Perenual</h2>
+        <form method="post" th:action="@{/app/species/import}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="form-row">
+                <label for="perenualId">Perenual ID</label>
+                <input id="perenualId" name="perenualId" placeholder="например: 123" inputmode="numeric"/>
+                <div class="muted" style="margin-top:6px;">
+                    Введите числовой ID вида из Perenual. После импорта откроется локальная карточка вида.
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+                <button class="primary" type="submit">Импортировать</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <form method="get" th:action="@{/app/species}" onsubmit="return window.__syncTagsBeforeSubmit?.();">
+            <div class="form-row">
+                <label for="q">Поиск</label>
+                <input id="q" name="q" placeholder="название или латинское" th:value="${q}"/>
+            </div>
+
+            <div class="form-row">
+                <label for="light">Свет</label>
+                <select id="light" name="light">
+                    <option value="" th:selected="${light == null}">Любой</option>
+                    <option value="яркий свет" th:selected="${light != null && light.name() == 'BRIGHT'}">Яркий свет</option>
+                    <option value="полутень" th:selected="${light != null && light.name() == 'PART_SHADE'}">Полутень</option>
+                    <option value="тень" th:selected="${light != null && light.name() == 'SHADE'}">Тень</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="cap">Капризность (LOW/MID/HIGH)</label>
+                <input id="cap" name="cap" list="capList" placeholder="например: LOW" th:value="${cap}"/>
+                <datalist id="capList">
+                    <option value="LOW">Низкая</option>
+                    <option value="MID">Средняя</option>
+                    <option value="HIGH">Высокая</option>
+                </datalist>
+                <div class="muted" style="margin-top:6px;">Подсказка: LOW — низкая, MID — средняя, HIGH — высокая.</div>
+            </div>
+
+            <!-- Этап 10.3 (P1): выбор нескольких тегов -->
+            <div class="form-row">
+                <label for="tagSelect">Теги (можно несколько)</label>
+                <select id="tagSelect" multiple size="6"
+                        style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:rgba(229,231,224,0.04); color:var(--text);">
+                    <option th:each="t : ${tagOptions}"
+                            th:value="${t.id}"
+                            th:text="${t.name}"
+                            th:selected="${selectedTagIds != null && selectedTagIds.contains(t.id)}">
+                        tag
+                    </option>
+                </select>
+
+                <!-- в запрос уходит одна строка "1,2,3" -->
+                <input type="hidden" id="tags" name="tags" th:value="${tags}"/>
+                <div class="muted" style="margin-top:6px;">Зажать Ctrl (Windows) / Cmd (Mac), чтобы выбрать несколько.</div>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+                <button class="primary" type="submit">Показать</button>
+                <a class="btn btn-ghost" th:href="@{/app/species}">Сбросить</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Этап 10.3: перед отправкой формы собираем выбранные id в строку "1,2,3"
+        window.__syncTagsBeforeSubmit = function () {
+            const select = document.getElementById('tagSelect');
+            const hidden = document.getElementById('tags');
+            if (!select || !hidden) return true;
+
+            const ids = Array.from(select.selectedOptions).map(o => o.value).filter(v => v && v.trim().length > 0);
+            hidden.value = ids.join(',');
+            return true;
+        };
+    </script>
+
+    <div class="card" th:if="${species == null || #lists.isEmpty(species)}">
+        Ничего не найдено.
+    </div>
+
+    <div th:if="${species != null && !#lists.isEmpty(species)}">
+        <div th:each="s : ${species}">
+            <div th:replace="~{fragments/components :: speciesCard(${s})}"></div>
+        </div>
+    </div>
+</main>
+
+</html>

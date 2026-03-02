@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('500 — Ошибка сервера', '', ~{::main})}">
+
+<main class="container">
+    <h1>500 — Ошибка сервера</h1>
+    <p class="muted">
+        Что-то пошло не так при обработке запроса:
+        <span th:text="${path}">/</span>
+    </p>
+
+    <div class="card" style="max-width:720px;">
+        <p class="muted" style="margin-top:0;">
+            Попробуйте обновить страницу. Если ошибка повторяется — это будет исправлено после проверки логов.
+        </p>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <a class="btn btn-primary" th:href="@{/}">На главную</a>
+            <a class="btn" th:href="${backUrl}">Назад</a>
+        </div>
+    </div>
+</main>
+
+</html>

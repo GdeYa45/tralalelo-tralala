@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Карточка растения', '', ~{::main})}">
+
+<main class="container">
+    <h1 style="margin-top:0;">Карточка растения</h1>
+
+    <div class="alert ok" th:if="${msg != null}" th:text="${msg}">ok</div>
+
+    <div class="card" style="padding:14px;">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div>
+                <h2 style="margin:0;" th:text="${p.nickname}">nickname</h2>
+                <div class="muted" th:if="${p.speciesName}" th:text="${p.speciesName}">species</div>
+                <div class="muted" th:if="${p.speciesLatinName}" th:text="${p.speciesLatinName}">latin</div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <span th:replace="~{fragments/components :: capricBadge(${p.cap})}"></span>
+                <span class="badge" th:if="${p.roomName}" th:text="${p.roomName}">Комната</span>
+            </div>
+        </div>
+
+        <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div id="nextWateringText" class="muted" th:text="${p.nextWateringText}">Полив</div>
+
+            <!-- Этап 6.2: AJAX-кнопка "Полил" -->
+            <button type="button"
+                    id="btnWaterNow"
+                    class="btn btn-primary"
+                    th:attr="data-plant-id=${p.id}">
+                Полил
+            </button>
+        </div>
+
+        <div id="waterAjaxStatus" class="muted" style="margin-top:8px;"></div>
+        <div id="waterAjaxError" class="alert error" style="display:none; margin-top:10px;"></div>
+
+        <div style="margin-top:10px;" th:if="${p.waterIntervalDays != null}">
+            <span class="muted">Интервал полива:</span>
+            <span th:text="${p.waterIntervalDays}">7</span><span class="muted"> дн.</span>
+        </div>
+        <div th:if="${p.lightLevel != null}">
+            <span class="muted">Свет:</span>
+            <span th:text="${p.lightLevel}">полутень</span>
+        </div>
+
+        <div class="muted" style="margin-top:10px;" th:if="${p.purchaseDate}" th:text="'Куплено: ' + ${p.purchaseDate}">Дата</div>
+
+        <div style="margin-top:10px;" th:if="${p.notes}">
+            <div class="muted">Заметки:</div>
+            <div th:text="${p.notes}">notes</div>
+        </div>
+
+        <!-- DoD 6.2: список задач на карточке растения -->
+        <div style="margin-top:14px;" id="tasksBlock">
+            <div class="muted" style="font-weight:700;">Задачи ухода</div>
+
+            <div th:if="${p.tasks == null || #lists.isEmpty(p.tasks)}" class="muted" style="margin-top:8px;">
+                Пока нет задач.
+            </div>
+
+            <div th:if="${p.tasks != null && !#lists.isEmpty(p.tasks)}" id="tasksList" style="margin-top:8px;">
+                <div th:each="t : ${p.tasks}" class="task-row">
+                    <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                        <div style="font-weight:700;" th:text="${t.typeLabel}">Полив</div>
+                        <div class="muted" th:text="${t.dueDate != null ? #temporals.format(t.dueDate, 'dd.MM.yyyy') : '—'}">date</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn btn-primary" th:href="@{/app/plants/{id}/edit(id=${p.id})}">Редактировать</a>
+            <a class="btn" th:href="@{/app/plants/{id}/events(id=${p.id})}">Журнал ухода</a>
+            <a class="btn btn-ghost" th:href="@{/app/plants/{id}/delete(id=${p.id})}">Удалить</a>
+            <a class="btn" th:href="@{/app/plants}">К списку</a>
+        </div>
+    </div>
+
+    <!-- CSRF для AJAX -->
+    <input type="hidden" id="csrfToken" th:value="${_csrf.token}"/>
+    <input type="hidden" id="csrfHeader" th:value="${_csrf.headerName}"/>
+
+    <script th:src="@{/js/userplant-water-ajax.js}"></script>
+
+</main>
+</html>

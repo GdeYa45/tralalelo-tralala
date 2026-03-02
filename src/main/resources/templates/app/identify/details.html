@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Результат распознавания', '', ~{::main})}">
+
+<main class="container">
+    <h1>Результат распознавания</h1>
+
+    <div class="alert ok" th:if="${msg != null}" th:text="${msg}">ok</div>
+    <div class="alert error" th:if="${selectError != null}" th:text="${selectError}">err</div>
+
+    <p><a th:href="@{/app/identify/history}">← к истории</a></p>
+
+    <div>
+        <strong>Статус:</strong> <span th:text="${item.status}"></span>
+    </div>
+
+    <div th:if="${item.plantnetRemainingRequests != null}" class="muted" style="margin-top:6px;">
+        <strong>Pl@ntNet: осталось запросов:</strong>
+        <span th:text="${item.plantnetRemainingRequests}"></span>
+    </div>
+
+    <div th:if="${failed}" class="alert error">
+        <strong>Ошибка:</strong> <span th:text="${item.errorMessage}"></span>
+    </div>
+
+    <div style="margin-top:12px;">
+        <img th:src="@{/app/identify/{id}/photo(id=${item.id})}" style="max-width:360px; border-radius:12px;">
+    </div>
+
+    <div style="margin-top:12px;">
+        <strong>Best match:</strong> <span th:text="${item.bestMatch}"></span>
+    </div>
+
+    <h2 style="margin-top:18px;">Кандидаты</h2>
+
+    <form th:action="@{/app/identify/{id}/select(id=${item.id})}" method="post" style="display:grid; gap:10px;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="card" style="padding:12px" th:each="c : ${item.candidates}">
+            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                <input type="radio"
+                       name="selectedScientificName"
+                       th:value="${c.scientificName}"
+                       th:checked="${item.selectedScientificName != null and item.selectedScientificName == c.scientificName}"
+                       required>
+                <div>
+                    <!-- В твоей сущности поле называется commonNames (строка) -->
+                    <div style="font-weight:700" th:text="${c.commonNames} ?: '—'">Common</div>
+                    <div class="muted" th:text="${c.scientificName}">Latin</div>
+                    <div class="muted" th:text="${c.score}">0.0</div>
+                </div>
+            </label>
+        </div>
+
+        <button class="btn primary" type="submit">Выбрать</button>
+    </form>
+
+    <!-- 4.5.3: импорт выбранного кандидата через Perenual в локальный каталог -->
+    <div th:if="${importError}" class="alert error" style="margin-top:14px;">
+        <strong>Импорт не выполнен:</strong> <span th:text="${importError}"></span>
+    </div>
+
+    <form th:action="@{/app/identify/{id}/import(id=${item.id})}" method="post" style="margin-top:14px;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button id="btnImport" class="btn primary" type="submit">Импортировать выбранный вид в каталог</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('btnImport');
+            if (!btn) return;
+
+            const form = btn.closest('form');
+            if (!form) return;
+
+            form.addEventListener('submit', () => {
+                btn.disabled = true;
+                btn.textContent = 'Импортирую...';
+            });
+        });
+    </script>
+</main>
+</html>

@@ -1,0 +1,119 @@
+@baseUrl = http://localhost:8090
+@password = TestPass123!
+
+### 0) Получить CSRF токен (страница регистрации)
+# Cookie-jar клиента сохранит JSESSIONID автоматически.
+GET {{baseUrl}}/auth/register
+
+> {%
+    // CSRF
+    const m = response.body.match(/name=\"_csrf\"\s+value=\"([^\"]+)\"/);
+    if (!m) throw new Error('CSRF token not found on /auth/register');
+    client.global.set('csrf', m[1]);
+    client.global.set('csrfParam', '_csrf');
+
+    // Уникальный email, чтобы прогонять файл много раз
+    const rnd = Math.random().toString(16).slice(2);
+    const email = `test_${Date.now()}_${rnd}@example.com`;
+    client.global.set('email', email);
+%}
+
+### 1) Регистрация пользователя (MVC)
+POST {{baseUrl}}/auth/register
+Content-Type: application/x-www-form-urlencoded
+
+email={{email}}&password={{password}}&confirmPassword={{password}}&{{csrfParam}}={{csrf}}
+
+### 2) Получить CSRF токен (страница входа)
+GET {{baseUrl}}/auth/login
+
+> {%
+    const m = response.body.match(/name=\"_csrf\"\s+value=\"([^\"]+)\"/);
+    if (!m) throw new Error('CSRF token not found on /auth/login');
+    client.global.set('csrf', m[1]);
+%}
+
+### 3) Логин (formLogin)
+# username = email, password = пароль
+POST {{baseUrl}}/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username={{email}}&password={{password}}&{{csrfParam}}={{csrf}}
+
+### 4) Получить CSRF токен (страница создания растения)
+GET {{baseUrl}}/app/plants/new
+
+> {%
+    const m = response.body.match(/name=\"_csrf\"\s+value=\"([^\"]+)\"/);
+    if (!m) throw new Error('CSRF token not found on /app/plants/new');
+    client.global.set('csrf', m[1]);
+%}
+
+### 5) Узнать любой speciesId (публичный API)
+GET {{baseUrl}}/api/species
+Accept: application/json
+
+> {%
+    const arr = JSON.parse(response.body);
+    if (!Array.isArray(arr) || arr.length === 0) {
+        throw new Error('No species in /api/species. Проверь seed миграции.');
+    }
+    client.global.set('speciesId', arr[0].id);
+%}
+
+### 6) Создать UserPlant (MVC) — нужен plantId для CareEvent
+POST {{baseUrl}}/app/plants
+Content-Type: application/x-www-form-urlencoded
+
+speciesId={{speciesId}}&nickname=Test%20Plant&purchaseDate=2026-03-01&notes=Created%20from%20.http&{{csrfParam}}={{csrf}}
+
+> {%
+    // После успешного создания ожидаем redirect на /app/plants/{id}
+    const loc = response.headers.valueOf('Location');
+    if (!loc) throw new Error('Location header not found (expected redirect to /app/plants/{id})');
+    const m = loc.match(/\/app\/plants\/(\d+)/);
+    if (!m) throw new Error('Could not parse plantId from Location: ' + loc);
+    client.global.set('plantId', m[1]);
+%}
+
+### 7) REST: list
+GET {{baseUrl}}/api/care-events?plantId={{plantId}}
+Accept: application/json
+
+### 8) REST: create
+POST {{baseUrl}}/api/care-events
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "userPlantId": {{plantId}},
+  "type": "WATER",
+  "comment": "Created from .http"
+}
+
+> {%
+    const obj = JSON.parse(response.body);
+    if (!obj.id) throw new Error('No id in create response');
+    client.global.set('eventId', obj.id);
+%}
+
+### 9) REST: list (после создания)
+GET {{baseUrl}}/api/care-events?plantId={{plantId}}
+Accept: application/json
+
+### 10) REST: update
+PUT {{baseUrl}}/api/care-events/{{eventId}}
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "comment": "Updated from .http"
+}
+
+### 11) REST: delete
+DELETE {{baseUrl}}/api/care-events/{{eventId}}
+X-CSRF-TOKEN: {{csrf}}
+
+### 12) REST: list (после удаления)
+GET {{baseUrl}}/api/care-events?plantId={{plantId}}
+Accept: application/json

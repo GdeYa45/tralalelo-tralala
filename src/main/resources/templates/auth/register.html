@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Регистрация', '', ~{::main})}">
+
+<main class="container">
+    <h1>Регистрация</h1>
+    <p class="muted">Создание аккаунта.</p>
+
+    <form method="post" th:action="@{/auth/register}" th:object="${form}"
+          class="card" style="padding:14px; margin-top:12px; max-width:520px;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div th:replace="~{fragments/components :: formErrors}"></div>
+
+        <label class="field">
+            <span class="field__label">Email</span>
+            <input class="input" type="email" th:field="*{email}" placeholder="email@example.com" required>
+        </label>
+
+        <label class="field" style="margin-top:12px;">
+            <span class="field__label">Пароль</span>
+            <input class="input" type="password" th:field="*{password}" required>
+        </label>
+
+        <label class="field" style="margin-top:12px;">
+            <span class="field__label">Подтверждение пароля</span>
+            <input class="input" type="password" th:field="*{confirmPassword}" required>
+        </label>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn primary" type="submit">Зарегистрироваться</button>
+            <a class="btn" th:href="@{/auth/login}">Вход</a>
+        </div>
+    </form>
+</main>
+</html>

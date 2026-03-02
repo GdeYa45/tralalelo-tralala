@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout(${s.name}, '', ~{::main})}">
+
+<main class="container">
+    <a class="btn btn-ghost" th:href="@{/app/species}">← Назад в каталог</a>
+
+    <div class="card">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div>
+                <h1 style="margin:0;" th:text="${s.name}">Название</h1>
+                <div class="muted" th:if="${s.latinName}" th:text="${s.latinName}">Latin</div>
+            </div>
+            <div>
+                <span th:replace="~{fragments/components :: capricBadge(${s.capriciousness})}"></span>
+            </div>
+
+            <div style="margin-top:10px;" th:if="${s.capriciousness != null}">
+                <div class="muted">
+                    Score: <span th:text="${s.capriciousness.score}">50</span> / 100
+                </div>
+
+                <div style="margin-top:8px;"
+                     th:if="${s.capriciousness.reasons != null && !#lists.isEmpty(s.capriciousness.reasons)}">
+                    <div class="muted" style="margin-bottom:6px;">Почему так:</div>
+                    <ul style="margin:0; padding-left:18px;">
+                        <li th:each="r : ${s.capriciousness.reasons}" th:text="${r}">reason</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:14px;">
+            <img th:src="@{/images/flat.jpg}" alt="Фото растения"
+                 style="width:100%; max-width:520px; border-radius:22px; border:1px solid var(--border);"/>
+        </div>
+
+        <div style="margin-top:14px;" th:if="${s.description}">
+            <div class="muted" th:text="${s.description}">Описание</div>
+        </div>
+
+        <div style="margin-top:12px;" th:if="${s.tags != null && !#lists.isEmpty(s.tags)}">
+            <span class="badge" th:each="t : ${s.tags}" th:text="${t}" style="margin-right:6px;">tag</span>
+        </div>
+
+        <h2 style="margin-top:18px;">Параметры ухода</h2>
+
+        <div th:if="${s.care != null}">
+            <div class="form-row" th:if="${s.care.lightLevel}">
+                <div class="muted">Свет</div>
+                <div th:text="${s.care.lightLevel}">полутень</div>
+            </div>
+
+            <div class="form-row" th:if="${s.care.waterIntervalDays != null}">
+                <div class="muted">Полив</div>
+                <div>
+                    <span th:text="${s.care.waterIntervalDays}">7</span><span class="muted"> дней</span>
+                </div>
+            </div>
+
+            <div class="form-row" th:if="${s.care.humidityPercent != null}">
+                <div class="muted">Влажность</div>
+                <div>
+                    <span th:text="${s.care.humidityPercent}">50</span><span class="muted"> %</span>
+                </div>
+            </div>
+
+            <div class="form-row" th:if="${s.care.notes}">
+                <div class="muted">Заметки</div>
+                <div th:text="${s.care.notes}">—</div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layouts/base :: layout('Личный кабинет', '', ~{::main})}">
+
+<main class="container">
+    <h1>Личный кабинет</h1>
+    <p class="muted">Тут собраны основные действия.</p>
+
+    <div class="grid" style="grid-template-columns: repeat(2, 1fr); margin-top:14px;">
+        <div class="card" style="padding:14px;">
+            <h2>Распознавание</h2>
+            <p class="muted">Загрузить фото и определить растение.</p>
+            <a class="btn primary" th:href="@{/app/identify}">Распознать</a>
+        </div>
+
+        <div class="card" style="padding:14px;">
+            <h2>Каталог видов</h2>
+            <p class="muted">Список видов из локальной базы.</p>
+            <a class="btn primary" th:href="@{/app/species}">Открыть каталог</a>
+        </div>
+
+        <div class="card" style="padding:14px;">
+            <h2>Мои растения</h2>
+            <p class="muted">Оранжерея: добавить и вести свои растения.</p>
+            <a class="btn primary" th:href="@{/app/plants}">Открыть</a>
+        </div>
+    </div>
+
+    <div class="card" style="padding:14px; margin-top:14px;" sec:authorize="hasRole('ADMIN')">
+        <h2>Админка</h2>
+        <p class="muted">Доступно только администраторам.</p>
+        <a class="btn" th:href="@{/admin}">Открыть</a>
+    </div>
+</main>
+</html>

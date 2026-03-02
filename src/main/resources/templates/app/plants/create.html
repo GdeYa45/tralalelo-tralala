@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Добавить растение', '', ~{::main})}">
+
+<main class="container">
+    <h1 style="margin-top:0;">Добавить растение</h1>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 14px;">
+        <span class="btn btn-primary">Вручную</span>
+        <a class="btn" th:href="@{/app/plants/new/photo}">По фото</a>
+    </div>
+    <div class="muted">Создание UserPlant.</div>
+
+    <form method="post" th:action="@{/app/plants}" th:object="${form}" class="card" style="padding:14px;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div th:replace="~{fragments/components :: formErrors}"></div>
+
+        <div class="form-row">
+            <label>Название (как в комнате)</label>
+            <input th:field="*{nickname}" placeholder="например: Фикус на окне"/>
+            <div class="error-text" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}">err</div>
+        </div>
+
+        <div class="form-row">
+            <label for="speciesId">Вид растения</label>
+
+            <input id="speciesSearch"
+                   type="text"
+                   autocomplete="off"
+                   placeholder="поиск вида (начни вводить...)"
+                   style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:rgba(229,231,224,0.04); color:var(--text);"/>
+
+            <div id="speciesSearchStatus" class="muted" style="margin-top:6px;"></div>
+            <div id="speciesCandidates" class="candidate-box" style="margin-top:8px;"></div>
+
+            <select id="speciesId" th:field="*{speciesId}"
+                    style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:rgba(229,231,224,0.04); color:var(--text);">
+                <option value="" disabled th:selected="${form.speciesId == null}">— выбери вид —</option>
+                <option th:each="o : ${speciesOptions}"
+                        th:value="${o.id}"
+                        th:text="${o.label}">
+                </option>
+            </select>
+
+            <div class="error-text" th:if="${#fields.hasErrors('speciesId')}" th:errors="*{speciesId}">err</div>
+            <div class="muted" style="margin-top:6px;">Если нужного вида нет — сначала импортировать его из каталога.</div>
+        </div>
+
+        <div class="form-row">
+            <label>Комната (необязательно)</label>
+            <select th:field="*{room}" style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:rgba(229,231,224,0.04); color:var(--text);">
+                <option value="">— не выбрано —</option>
+                <option th:each="o : ${roomOptions}" th:value="${o.id}" th:text="${o.label}">комната</option>
+            </select>
+            <div class="error-text" th:if="${#fields.hasErrors('room')}" th:errors="*{room}">err</div>
+        </div>
+
+        <div class="form-row">
+            <label>Дата покупки (необязательно)</label>
+            <input type="date" th:field="*{purchaseDate}"/>
+            <div class="error-text" th:if="${#fields.hasErrors('purchaseDate')}" th:errors="*{purchaseDate}">err</div>
+        </div>
+
+        <div class="form-row">
+            <label>Заметки (необязательно)</label>
+            <textarea th:field="*{notes}" rows="4"
+                      style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:rgba(229,231,224,0.04); color:var(--text);"></textarea>
+            <div class="error-text" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}">err</div>
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="primary" type="submit">Сохранить</button>
+            <a class="btn btn-ghost" th:href="@{/app/plants}">Отмена</a>
+        </div>
+    </form>
+
+    <script th:src="@{/js/species-ajax-search.js}"></script>
+
+</main>
+</html>

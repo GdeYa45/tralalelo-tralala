@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Сегодня', '', ~{::main})}">
+
+<main class="container">
+    <h1>Сегодня</h1>
+
+    <!-- (если у тебя уже есть блок "что нужно сегодня" — вставь его выше/ниже; этот файл не ломает стили) -->
+
+    <!-- Этап 9.4 (P0): реальная страница/дашборд использует запрос с подзапросом -->
+    <h2 style="margin-top:22px;">Без полива</h2>
+    <p class="muted" style="margin-top:6px;">
+        Растения, которые не поливали <b><span th:text="${noWaterDays}">7</span></b> дней и больше.
+    </p>
+
+    <form method="get" th:action="@{/app/today}" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+        <div>
+            <label class="muted" for="noWaterDays">Порог (дней)</label><br/>
+            <input id="noWaterDays" name="noWaterDays" type="number" min="1" max="365"
+                   th:value="${noWaterDays}" style="max-width:140px;"/>
+        </div>
+        <button class="btn" type="submit">Показать</button>
+    </form>
+
+    <div class="card" th:if="${noWaterPlants == null || #lists.isEmpty(noWaterPlants)}" style="margin-top:12px;">
+        Нет растений, которые давно не поливали
+    </div>
+
+    <div th:if="${noWaterPlants != null && !#lists.isEmpty(noWaterPlants)}">
+        <div th:each="p : ${noWaterPlants}" class="card" style="padding:14px; margin-top:12px;">
+            <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                <div>
+                    <div style="font-weight:700;">
+                        <a th:href="@{/app/plants/{id}(id=${p.plantId})}" th:text="${p.nickname}">Растение</a>
+                    </div>
+                    <div class="muted" th:if="${p.speciesName}" th:text="${p.speciesName}">Вид</div>
+
+                    <div class="muted" th:if="${p.lastWaterTime != null}">
+                        Последний полив:
+                        <span th:text="${#temporals.format(p.lastWaterTime, 'dd.MM.yyyy HH:mm')}">time</span>
+                    </div>
+                    <div class="muted" th:if="${p.lastWaterTime == null}">
+                        Поливов ещё не было
+                    </div>
+                </div>
+
+                <div>
+                    <div class="badge">
+                        <span th:text="${p.daysWithoutWatering}">0</span> дн. без полива
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <a class="btn btn-primary" th:href="@{/app/plants/{id}(id=${p.plantId})}">Открыть растение</a>
+                <a class="btn" th:href="@{/app/plants/{id}/events(id=${p.plantId})}">Журнал ухода</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+</html>

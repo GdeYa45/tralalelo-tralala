@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Ошибка данных', '', ~{::main})}">
+
+<main class="container">
+    <h1>Некорректные данные</h1>
+    <p class="muted">
+        Запрос содержит ошибки:
+        <span th:text="${path}">/</span>
+    </p>
+
+    <div class="card" style="max-width:720px;">
+        <div class="alert error" th:if="${errors != null and !#lists.isEmpty(errors)}">
+            <div style="font-weight:600; margin-bottom:8px;">Что нужно исправить:</div>
+            <ul style="margin:0; padding-left:18px;">
+                <li th:each="e : ${errors}" th:text="${e}">Ошибка</li>
+            </ul>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <a class="btn btn-primary" th:href="${backUrl}">Назад к форме</a>
+            <a class="btn" th:href="@{/}">На главную</a>
+        </div>
+    </div>
+</main>
+
+</html>

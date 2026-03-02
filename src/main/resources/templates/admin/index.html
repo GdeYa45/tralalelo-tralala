@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Админка', '', ~{::main})}">
+
+<main class="container">
+    <h1>Админка</h1>
+    <p class="muted">Раздел для администраторов.</p>
+
+    <div class="card" style="padding:14px; margin-top:12px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn primary" th:href="@{/app/species}">Каталог видов</a>
+            <a class="btn" th:href="@{/app}">Личный кабинет</a>
+        </div>
+    </div>
+</main>
+</html>

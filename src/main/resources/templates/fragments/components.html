@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:remove="tag">
+
+<!-- 3.2: фрагменты/части шаблонов -->
+
+<!-- Бейдж “капризность” (используем существующий .badge) -->
+<span th:fragment="capricBadge(cap)"
+      class="badge"
+      th:text="${cap != null ? cap.label : 'Средняя'}">Средняя</span>
+
+<!-- Блок ошибок формы (используем существующие .alert.error + .error-text) -->
+<div th:fragment="formErrors" th:remove="tag">
+    <div class="alert error" th:if="${#fields.hasErrors('*')}">
+        <div style="font-weight: 700; margin-bottom: 6px;">Проверь поля формы:</div>
+        <div class="error-text" th:each="e : ${#fields.errors('*')}" th:text="${e}">Ошибка</div>
+    </div>
+</div>
+
+<!-- Карточка вида (без новых CSS-классов) -->
+<div th:fragment="speciesCard(s)" class="card">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+            <h2 style="margin:0;" th:text="${s.name}">Название</h2>
+            <div class="muted" th:if="${s.latinName}" th:text="${s.latinName}">Latin</div>
+        </div>
+        <div>
+            <span th:replace="~{fragments/components :: capricBadge(${s.capriciousness})}"></span>
+        </div>
+    </div>
+
+    <div class="muted" style="margin-top:10px;" th:if="${s.description}" th:text="${s.description}">
+        Описание
+    </div>
+
+    <div style="margin-top:10px;" th:if="${s.care != null}">
+        <div>
+            <span class="muted">Свет:</span>
+            <span th:text="${s.care.lightLevel}">полутень</span>
+        </div>
+        <div th:if="${s.care.waterIntervalDays != null}">
+            <span class="muted">Полив:</span>
+            <span th:text="${s.care.waterIntervalDays}">7</span><span class="muted"> дн.</span>
+        </div>
+        <div th:if="${s.care.humidityPercent != null}">
+            <span class="muted">Влажность:</span>
+            <span th:text="${s.care.humidityPercent}">50</span><span class="muted"> %</span>
+        </div>
+    </div>
+
+    <div style="margin-top:10px;" th:if="${s.tags != null && !#lists.isEmpty(s.tags)}">
+        <span class="badge" th:each="t : ${s.tags}" th:text="${t}" style="margin-right:6px;">tag</span>
+    </div>
+
+    <div style="margin-top:14px;">
+        <a class="btn btn-primary" th:href="@{/app/species/{id}(id=${s.id})}">Открыть</a>
+    </div>
+</div>
+
+<!-- Карточка моего растения (фрагмент по этапу 3.2; используется в списке /app/plants) -->
+<div th:fragment="userPlantCard(p)" class="card" style="padding:14px;">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+            <h2 style="margin:0;" th:text="${p.nickname}">Растение</h2>
+            <div class="muted" th:if="${p.speciesName}" th:text="${p.speciesName}">Вид</div>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span th:replace="~{fragments/components :: capricBadge(${p.cap})}"></span>
+            <span class="badge" th:if="${p.roomName}" th:text="${p.roomName}">Комната</span>
+        </div>
+    </div>
+
+    <div class="muted" style="margin-top:10px;" th:if="${p.nextWateringText}" th:text="${p.nextWateringText}">Полив</div>
+    <div class="muted" th:if="${p.purchaseDate}" th:text="'Куплено: ' + ${p.purchaseDate}">Дата</div>
+
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn btn-primary" th:href="@{/app/plants/{id}(id=${p.id})}">Открыть</a>
+        <a class="btn" th:href="@{/app/plants/{id}/edit(id=${p.id})}">Редактировать</a>
+        <a class="btn btn-ghost" th:href="@{/app/plants/{id}/delete(id=${p.id})}">Удалить</a>
+    </div>
+</div>
+
+</html>

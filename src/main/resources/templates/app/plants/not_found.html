@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Растение не найдено', '', ~{::main})}">
+
+<main class="container">
+    <div class="card">
+        <h1 style="margin-top:0;">Растение не найдено</h1>
+        <div class="muted" th:text="${message}">Сообщение</div>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn btn-primary" th:href="@{/app/plants}">К списку</a>
+            <a class="btn btn-ghost" th:href="@{/app}">В кабинет</a>
+        </div>
+    </div>
+</main>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout('Распознавание по фото', '', ~{::main})}">
+
+<main class="container">
+    <h1 style="margin-top:0;">Распознавание по фото</h1>
+
+    <div class="card" style="padding:14px;">
+        <div class="muted">Загрузка фото → кандидаты Pl@ntNet (AJAX, без перезагрузки).</div>
+
+        <div style="margin-top:12px;">
+            <input id="plantnetFile" type="file" accept="image/jpeg,image/png"/>
+        </div>
+
+        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="plantnetBtn" type="button" class="btn btn-primary">Распознать</button>
+        </div>
+
+        <div id="plantnetStatus" class="muted" style="margin-top:10px;"></div>
+        <div id="plantnetError" class="alert error" style="display:none; margin-top:10px;"></div>
+
+        <div style="margin-top:12px;">
+            <div class="muted" style="font-weight:700;">Кандидаты</div>
+            <div id="plantnetCandidates" class="candidate-box" style="margin-top:8px;"></div>
+        </div>
+
+        <div id="plantnetSelected" class="muted" style="margin-top:12px;"></div>
+    </div>
+
+    <script th:src="@{/js/identify-plantnet-ajax.js}"></script>
+</main>
+</html>

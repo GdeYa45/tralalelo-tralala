@@ -1,0 +1,532 @@
+:root {
+    --bg: #2F3E34; /* тёмный мох — фон */
+    --card: #3A4A3F; /* чуть светлее мха для карточек */
+    --text: #E5E7E0; /* известняк — основной текст */
+    --muted: #9DB8A0; /* шалфей — вторичный текст */
+    --border: #4B5D50; /* границы */
+    --accent: #5F7A61; /* хвоя — акцент */
+    --danger: #EF4444; /* можно оставить красный */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+html, body {
+    height: 100%;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 18px;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(229, 231, 224, 0.06);
+    backdrop-filter: blur(14px);
+}
+
+.nav a {
+    color: var(--text);
+    text-decoration: none;
+    margin-right: 12px;
+}
+
+.nav a:hover {
+    text-decoration: underline;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.card {
+    border: 1px solid rgba(229, 231, 224, 0.14);
+    background: rgba(58, 74, 63, 0.72);
+    border-radius: 22px;
+    padding: 28px;
+    margin-top: 16px;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.30),
+    0 2px 0 rgba(229, 231, 224, 0.04) inset;
+}
+
+.form-row {
+    margin-bottom: 12px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(229, 231, 224, 0.04);
+    color: var(--text);
+}
+
+button {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(229, 231, 224, 0.04);
+    color: var(--text);
+    cursor: pointer;
+}
+
+button.primary {
+    border-color: rgba(95, 122, 97, 0.7);
+    background: rgba(95, 122, 97, 0.35);
+}
+
+.alert {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.alert.error {
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.alert.ok {
+    border-color: rgba(34, 197, 94, 0.45);
+}
+
+.error-text {
+    color: #fca5a5;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    background: rgba(229, 231, 224, 0.04);
+    transition: transform .05s ease, background .15s ease, border-color .15s ease;
+}
+
+.btn:hover {
+    background: rgba(229, 231, 224, 0.08);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background: rgba(95, 122, 97, 0.35); /* хвоя */
+    border-color: rgba(95, 122, 97, 0.75);
+}
+
+.btn-primary:hover {
+    background: rgba(95, 122, 97, 0.45);
+}
+
+.btn-ghost {
+    background: transparent;
+}
+
+.btn-ghost:hover {
+    background: rgba(229, 231, 224, 0.06);
+}
+
+/* Фон-картинка только для страниц с class="auth-bg" */
+body {
+    background: linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)),
+    url("../images/back.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* HERO: большая плашка почти на весь экран */
+.hero {
+    flex: 1 0 auto;
+    display: grid;
+    place-items: center;
+    padding: 36px 18px;
+}
+
+/* полупрозрачная “плашка”, но фон виден */
+.hero-panel {
+    width: min(1200px, 94vw);
+    min-height: 72vh;
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr; /* правой (картинке) больше места */
+    gap: 16px;
+    align-items: center;
+
+    padding: 44px;
+    border-radius: 46px;
+
+    /* стекло + мягкая моховая подложка */
+    background: rgba(58, 74, 63, 0.55);
+    border: 1px solid rgba(229, 231, 224, 0.14);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35),
+    0 2px 0 rgba(229, 231, 224, 0.06) inset;
+}
+
+/* чуть “органичнее”, как на референсе (не прямоугольник) */
+.hero-panel {
+    border-radius: 46px;
+}
+
+.hero-left {
+    max-width: 520px;
+    padding-left: 110px; /* текст не расползается по всей колонке */
+}
+
+/* левая часть */
+.hero-title {
+    margin: 0;
+    letter-spacing: 0.2px;
+    font-size: 56px; /* крупнее как на референсе */
+    line-height: 1.02;
+}
+
+.hero-subtitle {
+    color: rgba(229, 231, 224, 0.88);
+    margin-top: 14px;
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 42ch;
+}
+
+.hero-actions {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* правая часть: фото */
+.hero-right {
+    display: flex;
+    justify-content: center;
+}
+
+.hero-photo {
+    width: min(460px, 100%);
+    height: min(560px, 60vh);
+    object-fit: cover;
+    border-radius: 26px;
+
+    /* рамка-паспарту */
+    background: rgba(229, 231, 224, 0.12);
+    padding: 14px; /* создаёт белёсое поле вокруг картинки */
+    box-sizing: border-box;
+
+    border: 1px solid rgba(229, 231, 224, 0.16);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+
+    /* сдвигаем левее, чтобы "заполнить" пустоту */
+    transform: translateX(-18px);
+}
+
+/* адаптив: на телефоне картинка вниз */
+@media (max-width: 900px) {
+    .hero-panel {
+        grid-template-columns: 1fr;
+        padding: 28px;
+        min-height: auto;
+    }
+
+    .hero-right {
+        justify-content: center;
+    }
+
+    .hero-photo {
+        height: 360px;
+        width: 100%;
+    }
+
+    .hero-left {
+        padding-left: 0;
+    }
+}
+
+/* чтобы карточка читалась на фоне */
+body.auth-bg .card {
+    background: rgba(58, 74, 63, 0.85);
+    border-color: rgba(75, 93, 80, 0.75);
+    backdrop-filter: blur(6px);
+}
+
+.footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+
+    /* как у .nav */
+    background: rgba(229, 231, 224, 0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.footer__inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.footer__brand {
+    min-width: 240px;
+}
+
+.footer__title {
+    font-weight: 800;
+    letter-spacing: .2px;
+    font-size: 18px;
+}
+
+.footer__subtitle {
+    margin-top: 6px;
+    color: var(--text);
+    line-height: 1.4;
+    max-width: 44ch;
+}
+
+.footer__cta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: right;
+}
+
+.footer__note {
+    color: var(--text);
+    line-height: 1.35;
+    max-width: 34ch;
+}
+
+.footer__bottom {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 12px 18px 18px 18px;
+    border-top: 1px solid rgba(229, 231, 224, 0.10);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-size: 13px;
+}
+
+.footer__dot {
+    opacity: .6;
+    color: var(--text);
+}
+
+@media (max-width: 760px) {
+    .footer__inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer__cta {
+        width: 100%;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    .footer__note {
+        max-width: none;
+    }
+}
+
+/* ===== AUTH PAGES (login/register) ===== */
+/* === ровная сетка для login/register === */
+.auth {
+    flex: 1 0 auto;
+    display: grid;
+    place-items: center;
+    padding: 40px 18px;
+}
+
+.auth .card {
+    width: min(520px, 92vw);
+    padding: 34px 36px;
+    border-radius: 28px;
+}
+
+.auth .form-row {
+    margin-bottom: 14px;
+}
+
+.auth label {
+    display: block;
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    letter-spacing: .2px;
+}
+
+.auth input {
+    width: 100%;
+    height: 46px; /* одинаковая высота */
+    padding: 10px 14px;
+    border-radius: 12px;
+}
+
+.auth .actions {
+    margin-top: 18px;
+    display: grid;
+    gap: 12px;
+}
+
+/* кнопка “создать аккаунт/войти” ровная */
+.auth .actions button.primary {
+    width: 100%;
+    height: 46px;
+}
+
+/* нижняя строка “уже есть аккаунт / войти” */
+.auth .auth-bottom {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgba(229, 231, 224, 0.78);
+}
+
+.auth .auth-bottom a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(229, 231, 224, 0.18);
+    text-decoration: none;
+    color: rgba(229, 231, 224, 0.92);
+}
+
+.auth .auth-bottom a:hover {
+    background: rgba(229, 231, 224, 0.06);
+}
+
+/* --- DoD 6.1: AJAX candidates list (Add plant) --- */
+.candidate-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.candidate-item {
+    text-align: left;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(229, 231, 224, 0.03);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.candidate-item:hover {
+    background: rgba(229, 231, 224, 0.07);
+}
+
+/* --- Этап 6.2: задачи ухода на карточке растения --- */
+.task-row{
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(229, 231, 224, 0.03);
+    margin-top: 8px;
+}
+
+.candidate-box{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.candidate-item{
+    text-align: left;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(229,231,224,0.03);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.candidate-item:hover{
+    background: rgba(229,231,224,0.07);
+}
+
+/* 6.5: Perenual preview card */
+.perenual-preview{
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.perenual-preview-img{
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.perenual-preview-title{
+    font-weight: 800;
+}
