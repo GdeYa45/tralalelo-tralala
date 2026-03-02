@@ -57,6 +57,29 @@ public class PerenualImportService {
         species.setLatinName(firstScientific(d.scientificNames()));
         species.setDescription(d.description());
 
+        // Доп. защита: если вид уже есть в каталоге по latin/common name,
+        // переиспользуем его и не идем в Perenual (экономим лимит).
+        String normalizedName = normalizeName(name);
+        String normalizedLatin = normalizeName(species.getLatinName());
+
+        if (normalizedLatin != null) {
+            Optional<PlantSpecies> byLatin = plantSpeciesRepository.findFirstByLatinNameIgnoreCase(normalizedLatin);
+            if (byLatin.isPresent()) {
+                PlantSpecies existing = byLatin.get();
+                ensureExternalId(existing, perenualSpeciesId);
+                return existing;
+            }
+        }
+
+        if (normalizedName != null) {
+            Optional<PlantSpecies> byName = plantSpeciesRepository.findFirstByNameIgnoreCase(normalizedName);
+            if (byName.isPresent()) {
+                PlantSpecies existing = byName.get();
+                ensureExternalId(existing, perenualSpeciesId);
+                return existing;
+            }
+        }
+
         species = plantSpeciesRepository.save(species);
 
         CareProfile careProfile = new CareProfile();
@@ -90,6 +113,19 @@ public class PerenualImportService {
                     t.setName(name);
                     return tagRepository.save(t);
                 });
+    }
+
+    private void ensureExternalId(PlantSpecies species, long perenualSpeciesId) {
+        if (species.getExternalId() == null) {
+            species.setExternalId(perenualSpeciesId);
+            plantSpeciesRepository.save(species);
+        }
+    }
+
+    private static String normalizeName(String value) {
+        if (value == null) return null;
+        String normalized = value.trim().replaceAll("\\s+", " ");
+        return normalized.isBlank() ? null : normalized;
     }
 
     private static Integer guessWaterIntervalDays(PerenualWateringBenchmark wb) {
