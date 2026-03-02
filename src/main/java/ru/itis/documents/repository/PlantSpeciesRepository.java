@@ -23,6 +23,12 @@ public interface PlantSpeciesRepository extends JpaRepository<PlantSpecies, Long
     @EntityGraph(attributePaths = {"careProfile", "tags"})
     Optional<PlantSpecies> findByExternalId(Long externalId);
 
+    @EntityGraph(attributePaths = {"careProfile", "tags"})
+    Optional<PlantSpecies> findFirstByLatinNameIgnoreCase(String latinName);
+
+    @EntityGraph(attributePaths = {"careProfile", "tags"})
+    Optional<PlantSpecies> findFirstByNameIgnoreCase(String name);
+
     boolean existsByExternalId(Long externalId);
 
     /**

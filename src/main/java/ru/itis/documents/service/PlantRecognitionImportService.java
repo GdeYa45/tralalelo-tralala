@@ -8,10 +8,12 @@ import ru.itis.documents.domain.entity.PlantIdentification;
 import ru.itis.documents.integration.perenual.PerenualClient;
 import ru.itis.documents.integration.perenual.PerenualSpeciesShort;
 import ru.itis.documents.repository.AppUserRepository;
+import ru.itis.documents.repository.PlantSpeciesRepository;
 import ru.itis.documents.repository.PlantIdentificationRepository;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class PlantRecognitionImportService {
 
     private final AppUserRepository appUserRepository;
     private final PlantIdentificationRepository plantIdentificationRepository;
+    private final PlantSpeciesRepository plantSpeciesRepository;
 
     private final PerenualClient perenualClient;
     private final PerenualImportService perenualImportService;
@@ -42,6 +45,12 @@ public class PlantRecognitionImportService {
         String query = normalizeScientificNameForSearch(selected);
         if (query == null || query.isBlank()) {
             throw new IllegalArgumentException("Не получилось подготовить запрос в Perenual из выбранного имени: " + selected);
+        }
+
+        // Быстрый путь: если такой вид уже есть локально, не обращаемся к Perenual вообще.
+        Optional<Long> localSpeciesId = findLocalSpeciesId(query);
+        if (localSpeciesId.isPresent()) {
+            return localSpeciesId.get();
         }
 
         // 1) Perenual species-list?q=... (fallback: если "Genus species" не нашлось — пробуем только "Genus")
@@ -126,6 +135,16 @@ public class PlantRecognitionImportService {
 
         // по умолчанию: Genus species
         return parts[0] + " " + parts[1];
+    }
+
+    private Optional<Long> findLocalSpeciesId(String normalizedScientificName) {
+        String normalized = normalizedScientificName.trim().replaceAll("\\s+", " ");
+        if (normalized.isBlank()) return Optional.empty();
+
+        return plantSpeciesRepository.findFirstByLatinNameIgnoreCase(normalized)
+                .map(species -> species.getId())
+                .or(() -> plantSpeciesRepository.findFirstByNameIgnoreCase(normalized)
+                        .map(species -> species.getId()));
     }
 
     private AppUser resolveUser(String username) {
